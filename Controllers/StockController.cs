@@ -19,8 +19,13 @@ public class StockController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<OkObjectResult> GetAll()
+    public async Task<IActionResult> GetAll()
     {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
         var stocks = await _repo.GetAllAsync();
         var stockDto = stocks.Select(s => s.ToStockDto());
         return Ok(stockDto);
@@ -29,6 +34,11 @@ public class StockController : ControllerBase
     [HttpGet("{id:int}")]
     public async Task<IActionResult> GetById([FromRoute] int id)
     {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
         var stock = await _repo.GetByIdAsync(id);
 
         if (stock == null)
@@ -40,8 +50,13 @@ public class StockController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<CreatedAtActionResult> Create([FromBody] CreateStockDto createDto)
+    public async Task<IActionResult> Create([FromBody] CreateStockDto createDto)
     {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
         var stockModel = createDto.ToStockFromCreateDto();
         await _repo.CreateAsync(stockModel);
         return CreatedAtAction(nameof(GetById), new { id = stockModel.Id }, stockModel.ToStockDto());
@@ -50,6 +65,11 @@ public class StockController : ControllerBase
     [HttpPut("{id:int}")]
     public async Task<IActionResult> Update([FromRoute] int id, [FromBody] UpdateStockDto updateDto)
     {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
         var stockModel = await _repo.UpdateAsync(id, updateDto);
 
         if (stockModel == null)
@@ -63,6 +83,11 @@ public class StockController : ControllerBase
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> Delete([FromRoute] int id)
     {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
         var stockModel = await _repo.DeleteAsync(id);
 
         if (stockModel == null)
